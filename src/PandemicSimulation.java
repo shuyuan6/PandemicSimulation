@@ -16,38 +16,44 @@ import java.util.concurrent.*;
 
 
  public class PandemicSimulation extends Application {
-    int simulationTimeStep = 10;
-    int numPersons = 100;
+    int simulationTimeStep = 10; //
+    static int numPersons = 200;
     int fieldXLimit = 700;
     int fieldYLimit = 600;
     int chartXLimit = 700;
     int chartYLimit = 600;
     static int circleRadius = 5;
-    int speedVariance = 20; // pixels per second
+    int speedVariance = 20; // pixels per second, randomized speed
     int speedBase = 100; // pixels per second
     static Random random = new Random();
     List<Person> persons = new ArrayList<>(numPersons);
     int safeDistance = 1;
+    static int sickTimeToDeath = 20;
 
     static double sickSegment = 0.5;
-    static double immuneSegment = 0.4;
+    static double immuneSegment = 0.6;
     // the rest are healthy
 
-    int sickTotal = 0;
+    static int sickTotal = 0;
+    static int deadTotal = 0;
 
     Map<Integer, Integer> time2NumSick = new HashMap<>();
 
-    boolean sickNumUpdated = false;
-    LineChart<Number, Number>  chart = getChart();
+    static boolean sickNumUpdated = true;
+    static boolean deadNumUpdated = true;
+    static LineChart<Number, Number>  chart = getChart();
+
+    static Pane group = new Pane();
 
     enum Type {
         HEALTHY,
         INCUBATING,
         SICK,
         RECOVERED,
-        IMMUNE
+        IMMUNE,
+        DEAD
     }
-
+    static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     static class Person {
         public Circle circle;
         public Type type;
@@ -55,12 +61,37 @@ import java.util.concurrent.*;
         public double ySpeed;
         public double x;
         public double y;
+        public double sickTime;
+        public boolean removed = false;
 
         public Person(double x, double y, double xSpeed, double ySpeed) {
             double typeDice = random.nextDouble();
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    if (type == Type.SICK ) {
+                        sickTime = sickTime + 1;
+                        System.out.println("sickTime: " + sickTime);
+                        if (sickTime >= sickTimeToDeath) {
+                            type = Type.DEAD;
+                            sickTotal--;
+                            deadTotal++;
+                            deadNumUpdated = true;
+                            sickNumUpdated = true;
+                            System.out.println("sickTotal: "+ sickTotal);
+                        }
+                    }
+                }
+            };
+            executorService.scheduleAtFixedRate(
+                    run,
+                    0,
+                    1,
+                    TimeUnit.SECONDS);
             if (typeDice < sickSegment) {
                 if (x < 100) {
                     this.type = Type.SICK;
+                    sickTotal++;
                 } else {
                     this.type = Type.HEALTHY;
                 }
@@ -69,13 +100,12 @@ import java.util.concurrent.*;
             } else {
                 this.type = Type.HEALTHY;
             }
-
             this.circle = new Circle(x, y, circleRadius);
             this.x = x;
             this.y = y;
             this.xSpeed = xSpeed;
             this.ySpeed = ySpeed;
-            System.out.printf("Speed %f, %f\n", xSpeed, ySpeed);
+            // System.out.printf("Speed %f, %f\n", xSpeed, ySpeed);
         }
 
         public void move(int timeIntervalInMillis) {
@@ -127,7 +157,7 @@ import java.util.concurrent.*;
                 && p.x < line.getEndX();
     }
 
-    LineChart<Number, Number> getChart() {
+    public static LineChart<Number, Number> getChart() {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time");
 
@@ -138,9 +168,12 @@ import java.util.concurrent.*;
         XYChart.Series<Number, Number> dataSeries1 = new XYChart.Series<>();
         dataSeries1.setName("Number of sick people");
 
+        XYChart.Series<Number, Number> dataSeries2 = new XYChart.Series<>();
+        dataSeries2.setName("Number of dead people");
 
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.getData().add(dataSeries1);
+        chart.getData().add(dataSeries2);
 
         return chart;
     }
@@ -153,10 +186,6 @@ import java.util.concurrent.*;
         root.getColumnConstraints().add(new ColumnConstraints(fieldXLimit));
         root.getRowConstraints().add(new RowConstraints(fieldYLimit));
         root.getRowConstraints().add(new RowConstraints(fieldYLimit));
-
-        Pane group = new Pane();
-
-
 
         root.add(group, 0, 0);
         root.add(chart, 1, 0);
@@ -172,10 +201,17 @@ import java.util.concurrent.*;
             @Override
             public void handle(long currentNanoTime) {
                 for (Person p : persons) {
-                    p.syncState();
+                    if (!p.removed) {
+                        p.syncState();
+                        if (p.type == Type.DEAD) {
+                            group.getChildren().remove(p.circle);
+                            p.removed = true;
+                            System.out.println("Someone is removed!");
+                        }
+                    }
                 }
-                text.setText("Sick: " + sickTotal);
                 if (sickNumUpdated) {
+                    text.setText("Sick: " + sickTotal + "   " + "Dead: " + deadTotal);
                     sickNumUpdated = false;
                     long currTime = (long)(System.currentTimeMillis());
                     long elapsedTime = currTime - startTimeInSec;
@@ -184,10 +220,21 @@ import java.util.concurrent.*;
                             new XYChart.Data<>(elapsedTime, sickTotal)
                     );
                 }
+                if (deadNumUpdated) {
+                    text.setText("Sick: " + sickTotal + "   " + "Dead: " + deadTotal);
+                    deadNumUpdated = false;
+                    long currTime = (long)(System.currentTimeMillis());
+                    long elapsedTime = currTime - startTimeInSec;
+                    //System.out.println("Elapsed time: " + currTime);
+                    chart.getData().get(1).getData().add(
+                            new XYChart.Data<>(elapsedTime, deadTotal)
+                    );
+                }
+
             }
         }.start();
 
-        Line verticalLine = new Line(100, 5, 100, 700);
+        Line verticalLine = new Line(100, 20, 100, 700);
         Line horizontalLine = new Line(100, 300, 520, 300);
         group.getChildren().add(verticalLine);
         group.getChildren().add(horizontalLine);
@@ -201,6 +248,9 @@ import java.util.concurrent.*;
             group.getChildren().add(person.circle);
             persons.add(person);
         }
+        int initSickNumber = sickTotal;
+        chart.getData().get(0).getData().add(
+                new XYChart.Data<>(0, initSickNumber));
 
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(
                 4);
@@ -263,6 +313,7 @@ import java.util.concurrent.*;
     }
 
     public static void main(String[] args) {
+
         launch(args);
     }
 }
