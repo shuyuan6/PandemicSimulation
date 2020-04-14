@@ -31,7 +31,7 @@ import java.util.concurrent.*;
     static int sickTimeToDeath = 20;
 
     static double sickSegment = 0.5;
-    static double immuneSegment = 0.6;
+    static double immuneSegment = 0.5;
     // the rest are healthy
 
     static int sickTotal = 0;
@@ -234,10 +234,10 @@ import java.util.concurrent.*;
             }
         }.start();
 
-        Line verticalLine = new Line(100, 20, 100, 700);
-        Line horizontalLine = new Line(100, 300, 520, 300);
-        group.getChildren().add(verticalLine);
-        group.getChildren().add(horizontalLine);
+        // Line verticalLine = new Line(100, 20, 100, 700);
+        // Line horizontalLine = new Line(100, 300, 520, 300);
+        // group.getChildren().add(verticalLine);
+        // group.getChildren().add(horizontalLine);
 
         for (int i = 0; i< numPersons; i++) {
             Person person = new Person(
@@ -271,12 +271,15 @@ import java.util.concurrent.*;
                         p.ySpeed = -p.ySpeed;
                     }
 
+                    /*
                     if (hitVerticalLine(p, verticalLine)) {
                         p.xSpeed = -p.xSpeed;
                     }
                     if (hitHorizontalLine(p, horizontalLine)) {
                         p.ySpeed = -p.ySpeed;
                     }
+
+                     */
                 }
             };
             executorService.scheduleAtFixedRate(
