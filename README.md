@@ -6,7 +6,10 @@ This image shows that the count of the patients increased rapidly at the very ea
 ![Image1 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.10%20AM.png)
 
 
+As the time goes by, the epidemic curve reaches the peak, and go in into a short plateau period, the count of deaths emerges and increases. 
 ![Image2 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.23%20AM.png)
+
+
 
 ![Image3 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.33%20AM.png)
 
