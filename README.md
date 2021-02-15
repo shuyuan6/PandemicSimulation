@@ -1,7 +1,7 @@
 # PandemicSimulation
-This project uses Java to simulate pandemic model and generate epidemic curve that shows the frequency of new cases and deaths over time based on JavaFX, the shape of the curve differs in relation to specific factors during the pandemic.
+This project uses Java FX to visually simulate a pandemic model and plot curves that shows the occurrences of new cases and deaths over time. It verifies a well known theory - with no containment to an acute epidemic, the number of infections would grow exponential at the beginning. Then, as more people get infected, and then either die or become immune, we would reach a "turning point". The number of occurrence would drop significantly. Also, the shape of the curve differs would be affected by key parameters, such as disease transimitting rate, infection-to-death time, infection-to-recover time, etc. Having a medical background, I think it is particularly interesting to build software that applies to a real life world.
 
-
+## Eearly stage
 This image shows that the count of the patients increased rapidly at the very early stage, the epidemic curve is like exponential growth. 
 ![Image1 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.10%20AM.png)
 
