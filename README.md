@@ -3,16 +3,18 @@ This project uses Java FX to visually simulate a pandemic model and plot curves 
 
 In the figures shown below, the leftside sub-figure shows a board of dots. A green dot represents a healthy individual and a red dot represents an infected inidividual. Then dots move with random initial speed and random initial direction. When a dot hits the boundary, it gets bounced back. When a healthy dot comes close enough to an infected dot, there is a probablity that the healthy dot get infected. The infected dot will either die after a period of time, or recover and become immnune after a period of time. The rightside sub-figure plots the number of newly infected dots and overall dead dots in real time.
 
-## Eearly stage
-This image shows that the count of the patients increased rapidly at the very early stage, the epidemic curve is like exponential growth. 
+## Start stage
+This image shows that the count of the patients increased rapidly at the very early stage, the epidemic curve is like exponential growth.
+
 ![Image1 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.10%20AM.png)
 
-## Mid stage
-As the time goes by, the epidemic curve reaches the peak, and go in into a short plateau period, the count of deaths emerges and increases. 
+## Developing stage
+As the time goes by, the epidemic curve reaches the peak, and go in into a short plateau period, the count of deaths emerges and increases.
+
 ![Image2 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.23%20AM.png)
 
-
-
+## Peak stage
+As time progresses, most people have either got infected or dead. The number of new occurrences begins to drop significantly, while the overall death reaches record high.
 ![Image3 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.33%20AM.png)
 
 ![Image4 of PandemicSimulation](https://github.com/shuyuan6/PandemicSimulation/blob/master/Screen%20Shot%202020-09-28%20at%2012.44.44%20AM.png)
